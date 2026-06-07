@@ -14,7 +14,7 @@ export interface FeatureCardData {
   summary: string;
 }
 
-export interface RecommendationCardData {
+export interface BuildCardData {
   name: string;
   category: Category;
   compatibilityScore: number;

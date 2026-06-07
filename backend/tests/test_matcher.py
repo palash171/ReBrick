@@ -1,6 +1,6 @@
 import unittest
 
-from app.recommendation.matcher import recommend_builds
+from app.builds.matcher import recommend_builds
 
 
 class RecommendationMatcherTests(unittest.TestCase):

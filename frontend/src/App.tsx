@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 
 import { DetectionReviewCard } from "./components/DetectionReviewCard";
 import { PieceReferenceTile } from "./components/PieceReferenceTile";
-import { RecommendationCard } from "./components/RecommendationCard";
+import { BuildCard } from "./components/BuildCard";
 import { buildCategories } from "./data/buildCategories";
 import { pieceCatalog, pieceCatalogById } from "./data/pieceCatalog";
 import {
@@ -984,7 +984,7 @@ export default function App() {
         <div className="mt-6 grid gap-8 xl:grid-cols-[0.92fr_1.08fr]">
           <div className="space-y-4 xl:max-h-[calc(100vh-11rem)] xl:overflow-y-auto xl:pr-2">
             {recommendationResponse.recommendations.map((recommendation) => (
-              <RecommendationCard
+              <BuildCard
                 key={recommendation.buildId}
                 recommendation={recommendation}
                 formatScore={formatScore}

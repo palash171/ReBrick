@@ -1,11 +1,11 @@
 from typing import Dict, Iterable, List, Optional
 
-from app.recommendation.catalog import BUILD_CATALOG, BuildTemplate
-from app.recommendation.models import (
+from app.builds.catalog import BUILD_CATALOG, BuildTemplate
+from app.builds.models import (
     BuildRecommendationResult,
     MissingRequirementResult,
 )
-from app.recommendation.piece_families import normalize_inventory
+from app.builds.piece_families import normalize_inventory
 
 
 def score_template(

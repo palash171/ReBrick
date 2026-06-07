@@ -5,8 +5,8 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.recommendation.catalog import BUILD_BLUEPRINTS, BUILD_CATALOG
-from app.recommendation.matcher import recommend_builds
+from app.builds.catalog import BUILD_BLUEPRINTS, BUILD_CATALOG
+from app.builds.matcher import recommend_builds
 from app.sample_gallery import (
     copy_sample_images_to_upload_dir,
     list_sample_images,

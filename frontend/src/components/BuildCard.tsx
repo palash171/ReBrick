@@ -1,19 +1,19 @@
 import { BuildRecommendation } from "../types";
 import { humanizeIdentifier } from "../lib/inventory";
 
-interface RecommendationCardProps {
+interface BuildCardProps {
   recommendation: BuildRecommendation;
   formatScore: (score: number) => string;
   isSelected?: boolean;
   onSelect?: (buildId: string) => void;
 }
 
-export function RecommendationCard({
+export function BuildCard({
   recommendation,
   formatScore,
   isSelected = false,
   onSelect,
-}: RecommendationCardProps) {
+}: BuildCardProps) {
   return (
     <article
       className={`rounded-2xl border p-5 transition ${

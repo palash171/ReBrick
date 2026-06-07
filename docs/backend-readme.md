@@ -8,7 +8,7 @@ The backend handles uploads, piece checks, saved scan data, and build ideas.
 
 1. `backend/app/main.py` starts the API and the routes
 2. `backend/app/scans/` handles uploads and piece checking
-3. `backend/app/recommendation/` holds the build list and the matching code
+3. `backend/app/builds/` holds the build list and matching code
 4. `backend/tests/` holds the backend tests
 
 ## Main routes

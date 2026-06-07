@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from app.recommendation.matcher import recommend_builds
+from app.builds.matcher import recommend_builds
 from app.schemas import (
     BuildRecommendation,
     DetectionBatch,
