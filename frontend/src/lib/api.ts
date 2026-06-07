@@ -100,7 +100,7 @@ interface RawScanSessionResponse {
   inventory_adjustments: Record<string, number>;
   corrected_inventory: Record<string, number>;
   selected_category: Category | null;
-  buildIdea_response: RawBuildIdeaResponse | null;
+  build_idea_response: RawBuildIdeaResponse | null;
 }
 
 interface RawScanSessionSummary {
@@ -136,7 +136,7 @@ interface RawBuildIdea {
 
 interface RawBuildIdeaResponse {
   normalized_inventory: Record<string, number>;
-  buildIdeas: RawBuildIdea[];
+  build_ideas: RawBuildIdea[];
 }
 
 function mapDetectionBatch(rawBatch: RawDetectionBatch): DetectionBatch {
@@ -166,7 +166,7 @@ function mapBuildIdeaResponse(
 ): BuildIdeaResponse {
   return {
     normalizedInventory: rawResponse.normalized_inventory,
-    buildIdeas: rawResponse.buildIdeas.map((buildIdea) => ({
+    buildIdeas: rawResponse.build_ideas.map((buildIdea) => ({
       buildId: buildIdea.build_id,
       name: buildIdea.name,
       category: buildIdea.category,
@@ -223,8 +223,8 @@ function mapScanSessionResponse(rawResponse: RawScanSessionResponse): ScanSessio
     inventoryAdjustments: rawResponse.inventory_adjustments,
     correctedInventory: rawResponse.corrected_inventory,
     selectedCategory: rawResponse.selected_category,
-    buildIdeaResponse: rawResponse.buildIdea_response
-      ? mapBuildIdeaResponse(rawResponse.buildIdea_response)
+    buildIdeaResponse: rawResponse.build_idea_response
+      ? mapBuildIdeaResponse(rawResponse.build_idea_response)
       : null,
   };
 }
