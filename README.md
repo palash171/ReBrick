@@ -2,11 +2,9 @@
 
 Reuse and rediscover your old LEGO collection.
 
-<p align="center">
-  <video autoplay loop muted playsinline width="100%">
-    <source src="assets/rebrick-demo.mp4" type="video/mp4">
-  </video>
-</p>
+![ReBrick demo](assets/rebrick-demo.gif)
+
+Full video file: [rebrick-demo.mp4](assets/rebrick-demo.mp4)
 
 ## About
 
