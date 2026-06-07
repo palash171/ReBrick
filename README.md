@@ -2,6 +2,10 @@
 
 Reuse and rediscover your old LEGO collection.
 
+[![Watch the demo](assets/rebrick-demo-preview.jpg)](assets/rebrick-demo.mp4)
+
+Demo video: [Watch the app walkthrough](assets/rebrick-demo.mp4)
+
 ## About
 
 I had this idea because a lot of people have buckets of random LEGO pieces and do not know what they can build with them.
