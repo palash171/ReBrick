@@ -22,4 +22,4 @@ backend/storage/uploads/*
 !backend/storage/uploads/.gitkeep
 backend/storage/scans/*
 !backend/storage/scans/.gitkeep
-LEGO IMAGES/crops/
+sample-images/crops/

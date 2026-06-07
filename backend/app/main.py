@@ -6,14 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.builds.catalog import BUILD_BLUEPRINTS, BUILD_CATALOG
-from app.builds.matcher import recommend_builds
+from app.builds.matcher import find_build_ideas
 from app.sample_gallery import (
     copy_sample_images_to_upload_dir,
     list_sample_images,
     resolve_sample_paths,
 )
 from app.scans.image_detector import build_detection_batch_from_images
-from app.scans.mock_detector import build_default_detection_batch, build_detection_batch_for_files
+from app.scans.fallback_detector import build_default_detection_batch, build_detection_batch_for_files
 from app.scans.service import (
     apply_review_to_session,
     create_scan_session,
@@ -22,12 +22,12 @@ from app.scans.service import (
 )
 from app.schemas import (
     AssemblyGroupResponse,
-    BuildRecommendation,
+    BuildIdea,
     BuildDetailResponse,
     DetectionBatch,
     InventoryRequest,
     MissingRequirement,
-    RecommendationResponse,
+    BuildIdeaResponse,
     SampleImageListResponse,
     SampleScanRequest,
     ScanReviewRequest,
@@ -53,7 +53,7 @@ app.add_middleware(
 
 
 UPLOAD_ROOT = Path(__file__).resolve().parent.parent / "storage" / "uploads"
-SAMPLE_IMAGE_ROOT = Path(__file__).resolve().parent.parent.parent / "LEGO IMAGES"
+SAMPLE_IMAGE_ROOT = Path(__file__).resolve().parent.parent.parent / "sample-images"
 
 UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_ROOT), name="uploads")
@@ -126,8 +126,8 @@ def get_build_detail(build_id: str) -> BuildDetailResponse:
     )
 
 
-@app.get("/api/mock/detections", response_model=DetectionBatch)
-def get_mock_detections() -> DetectionBatch:
+@app.get("/api/demo/detections", response_model=DetectionBatch)
+def get_demo_detections() -> DetectionBatch:
     return build_default_detection_batch().detection_batch
 
 
@@ -224,13 +224,13 @@ def post_scan_review(upload_id: str, payload: ScanReviewRequest) -> ScanSessionR
         raise HTTPException(status_code=404, detail="Scan session not found.") from error
 
 
-@app.post("/api/recommendations", response_model=RecommendationResponse)
-def post_recommendations(payload: InventoryRequest) -> RecommendationResponse:
-    result = recommend_builds(payload.inventory, payload.category)
-    return RecommendationResponse(
+@app.post("/api/build-ideas", response_model=BuildIdeaResponse)
+def post_build_ideas(payload: InventoryRequest) -> BuildIdeaResponse:
+    result = find_build_ideas(payload.inventory, payload.category)
+    return BuildIdeaResponse(
         normalized_inventory=result["normalized_inventory"],
-        recommendations=[
-            BuildRecommendation(
+        build_ideas=[
+            BuildIdea(
                 build_id=item.build_id,
                 name=item.name,
                 category=item.category,
@@ -246,6 +246,6 @@ def post_recommendations(payload: InventoryRequest) -> RecommendationResponse:
                 ],
                 tags=item.tags,
             )
-            for item in result["recommendations"]
+            for item in result["build_ideas"]
         ],
     )

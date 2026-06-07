@@ -16,11 +16,12 @@ The backend handles uploads, piece checks, saved scan data, and build ideas.
 1. `/api/scan-demo`
 2. `/api/scan-samples`
 3. `/api/scans/{upload_id}/review`
-4. `/api/recommendations`
+4. `/api/build-ideas`
 5. `/api/catalog/builds/{build_id}`
 
 ## Notes
 
 1. Uploads are stored in `backend/storage/uploads`
 2. The piece check works best on plain backgrounds with no overlap
-3. Run tests with `./.venv/bin/python -m unittest discover -s tests`
+3. Use Python 3.12 for the backend virtual environment
+4. Run tests with `./.venv/bin/python -m unittest discover -s tests`

@@ -7,7 +7,7 @@ import { buildCategories } from "./data/buildCategories";
 import { pieceCatalog, pieceCatalogById } from "./data/pieceCatalog";
 import {
   fetchBuildDetail,
-  fetchRecommendations,
+  fetchBuildIdeas,
   fetchSampleImages,
   saveScanReview,
   startDemoScan,
@@ -26,15 +26,15 @@ import {
   BuildDetail,
   CategoryFilter,
   DetectionBatch,
-  RecommendationResponse,
+  BuildIdeaResponse,
   SampleImage,
   ScanSession,
   UploadedScanFile,
 } from "./types";
 
-type AppPage = "scan" | "review" | "recommendations" | "assembly";
+type AppPage = "scan" | "review" | "buildIdeas" | "assembly";
 
-const APP_PAGES: AppPage[] = ["scan", "review", "recommendations", "assembly"];
+const APP_PAGES: AppPage[] = ["scan", "review", "buildIdeas", "assembly"];
 
 const LazyBuildThreeViewer = lazy(() =>
   import("./components/BuildThreeViewer").then((module) => ({
@@ -54,7 +54,7 @@ function formatDisplayImageName(fileName: string, index?: number) {
   const fallbackLabel = typeof index === "number" ? `Test ${index + 1}` : "Test image";
   const baseName = fileName.replace(/\.[^/.]+$/, "");
 
-  if (/^chatgpt/i.test(baseName) || /^test[\s_-]?\d*/i.test(baseName) || /^[0-9a-f-]{12,}$/i.test(baseName)) {
+  if (/^test[\s_-]?\d*/i.test(baseName) || /^[0-9a-f-]{12,}$/i.test(baseName)) {
     const numericMatch = baseName.match(/test[\s_-]?(\d+)/i);
     if (numericMatch) {
       return `Test ${numericMatch[1]}`;
@@ -94,7 +94,7 @@ function ProgressChip({
   const titles: Record<AppPage, string> = {
     scan: "Scan",
     review: "Review",
-    recommendations: "Builds",
+    buildIdeas: "Builds",
     assembly: "Assembly",
   };
 
@@ -127,8 +127,8 @@ export default function App() {
   const [manualPieceId, setManualPieceId] = useState(pieceCatalog[0]?.pieceId ?? "piece_2x4");
   const [manualPieceQuantity, setManualPieceQuantity] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("all");
-  const [recommendationResponse, setRecommendationResponse] =
-    useState<RecommendationResponse | null>(null);
+  const [buildIdeaResponse, setBuildIdeaResponse] =
+    useState<BuildIdeaResponse | null>(null);
   const [selectedBuildId, setSelectedBuildId] = useState<string | null>(null);
   const [selectedBuildDetail, setSelectedBuildDetail] = useState<BuildDetail | null>(null);
   const [isExplodedView, setIsExplodedView] = useState(true);
@@ -137,7 +137,7 @@ export default function App() {
   const [fileInputKey, setFileInputKey] = useState(0);
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+  const [isLoadingBuildIdeas, setIsLoadingBuildIdeas] = useState(false);
   const [isLoadingBuildDetail, setIsLoadingBuildDetail] = useState(false);
   const [isLoadingSampleImages, setIsLoadingSampleImages] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
@@ -278,7 +278,7 @@ export default function App() {
     setManualPieceId(pieceCatalog[0]?.pieceId ?? "piece_2x4");
     setManualPieceQuantity(1);
     setSelectedCategory("all");
-    setRecommendationResponse(null);
+    setBuildIdeaResponse(null);
     setSelectedBuildId(null);
     setSelectedBuildDetail(null);
     setIsExplodedView(true);
@@ -303,14 +303,14 @@ export default function App() {
     setReviewSelections(nextSelections);
     setInventoryAdjustments(session.inventoryAdjustments);
     setSelectedCategory(session.selectedCategory ?? "all");
-    setRecommendationResponse(session.recommendationResponse);
+    setBuildIdeaResponse(session.buildIdeaResponse);
     setSelectedBuildId(null);
     setSelectedBuildDetail(null);
     setIsExplodedView(true);
     setActiveAssemblyStageIndex(0);
 
-    if (session.recommendationResponse?.recommendations.length) {
-      void loadBuildDetail(session.recommendationResponse.recommendations[0].buildId);
+    if (session.buildIdeaResponse?.buildIdeas.length) {
+      void loadBuildDetail(session.buildIdeaResponse.buildIdeas[0].buildId);
     }
   }
 
@@ -442,8 +442,8 @@ export default function App() {
     });
   }
 
-  async function handleGenerateRecommendations() {
-    setIsLoadingRecommendations(true);
+  async function handleGenerateBuildIdeas() {
+    setIsLoadingBuildIdeas(true);
     setFeedbackMessage(null);
 
     try {
@@ -457,22 +457,22 @@ export default function App() {
           category,
         );
         applyScanSession(result.data);
-        setFeedbackMessage("Recommendations are ready. Pick a build to preview.");
+        setFeedbackMessage("Build ideas are ready. Pick one to preview.");
       } else {
-        const result = await fetchRecommendations(correctedInventory, category);
-        setRecommendationResponse(result.data);
-        if (result.data.recommendations.length > 0) {
-          await loadBuildDetail(result.data.recommendations[0].buildId);
+        const result = await fetchBuildIdeas(correctedInventory, category);
+        setBuildIdeaResponse(result.data);
+        if (result.data.buildIdeas.length > 0) {
+          await loadBuildDetail(result.data.buildIdeas[0].buildId);
         }
-        setFeedbackMessage("Recommendations are ready. Pick a build to preview.");
+        setFeedbackMessage("Build ideas are ready. Pick one to preview.");
       }
 
-      navigateWithHash("recommendations");
+      navigateWithHash("buildIdeas");
     } catch (error) {
       console.error(error);
-      setFeedbackMessage("Unable to generate recommendations right now.");
+      setFeedbackMessage("Unable to load build ideas right now.");
     } finally {
-      setIsLoadingRecommendations(false);
+      setIsLoadingBuildIdeas(false);
     }
   }
 
@@ -505,7 +505,7 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-2">
             <ProgressChip page="scan" currentPage={currentPage} />
             <ProgressChip page="review" currentPage={currentPage} />
-            <ProgressChip page="recommendations" currentPage={currentPage} />
+            <ProgressChip page="buildIdeas" currentPage={currentPage} />
             <ProgressChip page="assembly" currentPage={currentPage} />
           </div>
         </div>
@@ -918,11 +918,11 @@ export default function App() {
           </button>
           <button
             type="button"
-            onClick={() => void handleGenerateRecommendations()}
-            disabled={inventoryEntries.length === 0 || isLoadingRecommendations}
+            onClick={() => void handleGenerateBuildIdeas()}
+            disabled={inventoryEntries.length === 0 || isLoadingBuildIdeas}
             className="rounded-full bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300"
           >
-            {isLoadingRecommendations
+            {isLoadingBuildIdeas
               ? "Saving review and generating builds..."
               : "Continue to recommended builds"}
           </button>
@@ -931,10 +931,10 @@ export default function App() {
     );
   }
 
-  function renderRecommendationsPage() {
-    if (!recommendationResponse) {
+  function renderBuildIdeasPage() {
+    if (!buildIdeaResponse) {
       return renderGuardCard(
-        "No recommendations yet",
+        "No build ideas yet",
         "Finish the manual review step first. That step saves the corrected inventory and then generates build suggestions.",
         "Back to manual review",
         () => navigateWithHash("review"),
@@ -973,22 +973,22 @@ export default function App() {
 
           <button
             type="button"
-            onClick={() => void handleGenerateRecommendations()}
-            disabled={isLoadingRecommendations}
+            onClick={() => void handleGenerateBuildIdeas()}
+            disabled={isLoadingBuildIdeas}
             className="rounded-full bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300"
           >
-            {isLoadingRecommendations ? "Refreshing..." : "Refresh build list"}
+            {isLoadingBuildIdeas ? "Refreshing..." : "Refresh build list"}
           </button>
         </div>
 
         <div className="mt-6 grid gap-8 xl:grid-cols-[0.92fr_1.08fr]">
           <div className="space-y-4 xl:max-h-[calc(100vh-11rem)] xl:overflow-y-auto xl:pr-2">
-            {recommendationResponse.recommendations.map((recommendation) => (
+            {buildIdeaResponse.buildIdeas.map((buildIdea) => (
               <BuildCard
-                key={recommendation.buildId}
-                recommendation={recommendation}
+                key={buildIdea.buildId}
+                buildIdea={buildIdea}
                 formatScore={formatScore}
-                isSelected={selectedBuildId === recommendation.buildId}
+                isSelected={selectedBuildId === buildIdea.buildId}
                 onSelect={(buildId) => void loadBuildDetail(buildId)}
               />
             ))}
@@ -1086,7 +1086,7 @@ export default function App() {
         "No build preview selected",
         "Choose a recommended build first. Once a build preview is open, the assembly page shows one stage at a time.",
         "Back to recommended builds",
-        () => navigateWithHash("recommendations"),
+        () => navigateWithHash("buildIdeas"),
       );
     }
 
@@ -1110,7 +1110,7 @@ export default function App() {
             <button
               className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-200 transition hover:border-cyan-400 hover:text-cyan-200"
               type="button"
-              onClick={() => navigateWithHash("recommendations")}
+              onClick={() => navigateWithHash("buildIdeas")}
             >
               Back to recommended builds
             </button>
@@ -1291,14 +1291,14 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-2">
             <ProgressChip page="scan" currentPage={currentPage} />
             <ProgressChip page="review" currentPage={currentPage} />
-            <ProgressChip page="recommendations" currentPage={currentPage} />
+            <ProgressChip page="buildIdeas" currentPage={currentPage} />
             <ProgressChip page="assembly" currentPage={currentPage} />
           </div>
         </header>
 
         {currentPage === "scan" ? renderScanPage() : null}
         {currentPage === "review" ? renderReviewPage() : null}
-        {currentPage === "recommendations" ? renderRecommendationsPage() : null}
+        {currentPage === "buildIdeas" ? renderBuildIdeasPage() : null}
         {currentPage === "assembly" ? renderAssemblyPage() : null}
       </div>
     </main>

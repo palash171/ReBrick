@@ -75,7 +75,7 @@ export interface ScanSession {
   inventoryAdjustments: Record<string, number>;
   correctedInventory: Record<string, number>;
   selectedCategory: Category | null;
-  recommendationResponse: RecommendationResponse | null;
+  buildIdeaResponse: BuildIdeaResponse | null;
 }
 
 export interface ScanSessionSummary {
@@ -94,7 +94,7 @@ export interface MissingRequirement {
   shortBy: number;
 }
 
-export interface BuildRecommendation {
+export interface BuildIdea {
   buildId: string;
   name: string;
   category: Category;
@@ -124,9 +124,9 @@ export interface BuildDetail {
   assemblyGroups: AssemblyGroup[];
 }
 
-export interface RecommendationResponse {
+export interface BuildIdeaResponse {
   normalizedInventory: Record<string, number>;
-  recommendations: BuildRecommendation[];
+  buildIdeas: BuildIdea[];
 }
 
 export interface ApiResult<TData> {

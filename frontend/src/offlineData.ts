@@ -1,6 +1,6 @@
 import { DetectionBatch, ScanOverview } from "./types";
 
-export const mockDetectionBatch: DetectionBatch = {
+export const offlineDetectionBatch: DetectionBatch = {
   imageCount: 3,
   detections: [
     {
@@ -47,9 +47,9 @@ export const mockDetectionBatch: DetectionBatch = {
   ],
 };
 
-export function buildOfflineMockDetectionBatch(imageCount: number): DetectionBatch {
+export function buildOfflineDetectionBatch(imageCount: number): DetectionBatch {
   return {
-    ...mockDetectionBatch,
+    ...offlineDetectionBatch,
     imageCount,
   };
 }

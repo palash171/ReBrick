@@ -1,10 +1,10 @@
 import unittest
 
-from app.scans.mock_detector import build_detection_batch_for_files
+from app.scans.fallback_detector import build_detection_batch_for_files
 from app.schemas import UploadedScanFile
 
 
-class MockDetectorTests(unittest.TestCase):
+class FallbackDetectorTests(unittest.TestCase):
     def test_uploaded_files_generate_repeatable_scan_overview(self) -> None:
         saved_files = [
             UploadedScanFile(

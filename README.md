@@ -46,15 +46,16 @@ I built it as one project where I could work on frontend, backend, computer visi
 
 ```bash
 cd backend
-python3 -m venv .venv
-./.venv/bin/pip install -r requirements.txt
+python3.12 -m venv .venv
+./.venv/bin/python -m pip install "pip<26"
+./.venv/bin/python -m pip install -r requirements.txt
 ```
 
 2. Start the backend.
 
 ```bash
 cd backend
-./.venv/bin/python -m uvicorn app.main:app --reload
+./.venv/bin/python -m uvicorn app.main:app --reload --reload-dir app
 ```
 
 3. Set up the frontend.

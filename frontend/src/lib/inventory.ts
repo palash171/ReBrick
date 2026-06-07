@@ -6,12 +6,12 @@ import {
   pieceToFamilyMap,
 } from "../data/pieceCatalog";
 import {
-  BuildRecommendation,
+  BuildIdea,
   Category,
   DetectionBatch,
   InventoryMap,
   MissingRequirement,
-  RecommendationResponse,
+  BuildIdeaResponse,
 } from "../types";
 
 const LOW_CONFIDENCE_THRESHOLD = 0.55;
@@ -188,7 +188,7 @@ function normalizeInventory(rawInventory: InventoryMap): InventoryMap {
 function scoreBuildTemplate(
   template: (typeof buildTemplates)[number],
   familyInventory: InventoryMap,
-): BuildRecommendation {
+): BuildIdea {
   let matchedTotal = 0;
   let requiredTotal = 0;
   const matchedFamilies: Record<string, number> = {};
@@ -222,13 +222,13 @@ function scoreBuildTemplate(
   };
 }
 
-export function buildOfflineRecommendationResponse(
+export function buildOfflineBuildIdeaResponse(
   rawInventory: InventoryMap,
   category?: Category,
-): RecommendationResponse {
+): BuildIdeaResponse {
   const normalizedInventory = normalizeInventory(rawInventory);
 
-  const recommendations = buildTemplates
+  const buildIdeas = buildTemplates
     .filter((template) => !category || template.category === category)
     .map((template) => scoreBuildTemplate(template, normalizedInventory))
     .sort(
@@ -239,6 +239,6 @@ export function buildOfflineRecommendationResponse(
 
   return {
     normalizedInventory,
-    recommendations,
+    buildIdeas,
   };
 }

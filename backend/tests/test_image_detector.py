@@ -30,18 +30,18 @@ class ImageDetectorTests(unittest.TestCase):
             return build_detection_batch_from_images(saved_files, upload_root)
 
     def test_test1_image_generates_piece_groups(self) -> None:
-        source_image = Path(__file__).resolve().parents[2] / "LEGO IMAGES" / "Test1.png"
-        self.assertTrue(source_image.exists(), "Expected Test1.png to be available for detector tests.")
+        source_image = Path(__file__).resolve().parents[2] / "sample-images" / "Test 39.png"
+        self.assertTrue(source_image.exists(), "Expected Test 39.png to be available for detector tests.")
 
         with TemporaryDirectory() as temporary_directory:
             upload_root = Path(temporary_directory)
-            stored_name = "01_Test1.png"
+            stored_name = "01_Test_39.png"
             upload_path = upload_root / stored_name
             upload_path.write_bytes(source_image.read_bytes())
 
             saved_files = [
                 UploadedScanFile(
-                    original_name="Test1.png",
+                    original_name="Test 39.png",
                     stored_name=stored_name,
                     content_type="image/png",
                     size_bytes=upload_path.stat().st_size,
@@ -90,8 +90,8 @@ class ImageDetectorTests(unittest.TestCase):
     def test_modified_piece_photo_stays_conservative(self) -> None:
         source_image = (
             Path(__file__).resolve().parents[2]
-            / "LEGO IMAGES"
-            / "1eaf9226-ddc0-4adb-ac04-1f604eb0e9a3.png"
+            / "sample-images"
+            / "Test 01.png"
         )
         self.assertTrue(source_image.exists(), "Expected modified-piece sample image to exist.")
 

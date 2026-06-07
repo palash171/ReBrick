@@ -76,7 +76,7 @@ class MissingRequirement(BaseModel):
     short_by: int = Field(ge=1)
 
 
-class BuildRecommendation(BaseModel):
+class BuildIdea(BaseModel):
     build_id: str
     name: str
     category: str
@@ -87,9 +87,9 @@ class BuildRecommendation(BaseModel):
     tags: List[str]
 
 
-class RecommendationResponse(BaseModel):
+class BuildIdeaResponse(BaseModel):
     normalized_inventory: Dict[str, int]
-    recommendations: List[BuildRecommendation]
+    build_ideas: List[BuildIdea]
 
 
 class AssemblyGroupResponse(BaseModel):
@@ -133,7 +133,7 @@ class ScanSessionResponse(BaseModel):
     inventory_adjustments: Dict[str, int] = Field(default_factory=dict)
     corrected_inventory: Dict[str, int] = Field(default_factory=dict)
     selected_category: Optional[str] = None
-    recommendation_response: Optional[RecommendationResponse] = None
+    build_idea_response: Optional[BuildIdeaResponse] = None
 
 
 class ScanSessionListResponse(BaseModel):

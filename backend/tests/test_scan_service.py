@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 try:
-    from app.scans.mock_detector import build_scan_overview
+    from app.scans.fallback_detector import build_scan_overview
     from app.scans import service
     from app.schemas import DetectionBatch, UploadedScanFile
 except ModuleNotFoundError as error:
@@ -73,7 +73,7 @@ class ScanServiceTests(unittest.TestCase):
         self.assertEqual(loaded_session.detection_batch.image_count, 2)
         self.assertEqual(loaded_session.scan_overview.profile_name, "Test profile")
 
-    def test_apply_review_updates_inventory_and_recommendations(self) -> None:
+    def test_apply_review_updates_piece_list_and_build_ideas(self) -> None:
         service.create_scan_session(
             upload_id="scan456",
             saved_files=[
@@ -98,8 +98,8 @@ class ScanServiceTests(unittest.TestCase):
         self.assertEqual(updated_session.corrected_inventory["piece_2x4"], 10)
         self.assertEqual(updated_session.corrected_inventory["piece_2x2"], 4)
         self.assertEqual(updated_session.selected_category, "objects")
-        self.assertIsNotNone(updated_session.recommendation_response)
-        self.assertTrue(updated_session.recommendation_response.recommendations)
+        self.assertIsNotNone(updated_session.build_idea_response)
+        self.assertTrue(updated_session.build_idea_response.build_ideas)
 
     def test_list_scan_sessions_includes_overview_summary(self) -> None:
         service.create_scan_session(

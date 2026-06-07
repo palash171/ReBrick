@@ -1,5 +1,5 @@
-import { buildOfflineRecommendationResponse } from "./inventory";
-import { buildOfflineMockDetectionBatch, buildOfflineScanOverview } from "../mockData";
+import { buildOfflineBuildIdeaResponse } from "./inventory";
+import { buildOfflineDetectionBatch, buildOfflineScanOverview } from "../offlineData";
 import { buildDetailsById } from "../data/buildDetails";
 import {
   ApiResult,
@@ -7,7 +7,7 @@ import {
   Category,
   DetectionBatch,
   InventoryMap,
-  RecommendationResponse,
+  BuildIdeaResponse,
   SampleImage,
   ScanOverview,
   ScanSession,
@@ -100,7 +100,7 @@ interface RawScanSessionResponse {
   inventory_adjustments: Record<string, number>;
   corrected_inventory: Record<string, number>;
   selected_category: Category | null;
-  recommendation_response: RawRecommendationResponse | null;
+  buildIdea_response: RawBuildIdeaResponse | null;
 }
 
 interface RawScanSessionSummary {
@@ -123,7 +123,7 @@ interface RawMissingRequirement {
   short_by: number;
 }
 
-interface RawBuildRecommendation {
+interface RawBuildIdea {
   build_id: string;
   name: string;
   category: Category;
@@ -134,9 +134,9 @@ interface RawBuildRecommendation {
   tags: string[];
 }
 
-interface RawRecommendationResponse {
+interface RawBuildIdeaResponse {
   normalized_inventory: Record<string, number>;
-  recommendations: RawBuildRecommendation[];
+  buildIdeas: RawBuildIdea[];
 }
 
 function mapDetectionBatch(rawBatch: RawDetectionBatch): DetectionBatch {
@@ -161,23 +161,23 @@ function mapDetectionBatch(rawBatch: RawDetectionBatch): DetectionBatch {
   };
 }
 
-function mapRecommendationResponse(
-  rawResponse: RawRecommendationResponse,
-): RecommendationResponse {
+function mapBuildIdeaResponse(
+  rawResponse: RawBuildIdeaResponse,
+): BuildIdeaResponse {
   return {
     normalizedInventory: rawResponse.normalized_inventory,
-    recommendations: rawResponse.recommendations.map((recommendation) => ({
-      buildId: recommendation.build_id,
-      name: recommendation.name,
-      category: recommendation.category,
-      description: recommendation.description,
-      compatibilityScore: recommendation.compatibility_score,
-      matchedFamilies: recommendation.matched_families,
-      missingFamilies: recommendation.missing_families.map((missingFamily) => ({
+    buildIdeas: rawResponse.buildIdeas.map((buildIdea) => ({
+      buildId: buildIdea.build_id,
+      name: buildIdea.name,
+      category: buildIdea.category,
+      description: buildIdea.description,
+      compatibilityScore: buildIdea.compatibility_score,
+      matchedFamilies: buildIdea.matched_families,
+      missingFamilies: buildIdea.missing_families.map((missingFamily) => ({
         familyId: missingFamily.family_id,
         shortBy: missingFamily.short_by,
       })),
-      tags: recommendation.tags,
+      tags: buildIdea.tags,
     })),
   };
 }
@@ -223,8 +223,8 @@ function mapScanSessionResponse(rawResponse: RawScanSessionResponse): ScanSessio
     inventoryAdjustments: rawResponse.inventory_adjustments,
     correctedInventory: rawResponse.corrected_inventory,
     selectedCategory: rawResponse.selected_category,
-    recommendationResponse: rawResponse.recommendation_response
-      ? mapRecommendationResponse(rawResponse.recommendation_response)
+    buildIdeaResponse: rawResponse.buildIdea_response
+      ? mapBuildIdeaResponse(rawResponse.buildIdea_response)
       : null,
   };
 }
@@ -262,7 +262,7 @@ function mapBuildDetailResponse(rawResponse: RawBuildDetailResponse): BuildDetai
 }
 
 function buildOfflineScanResponse(files: File[]): ScanSession {
-  const detectionBatch = buildOfflineMockDetectionBatch(files.length);
+  const detectionBatch = buildOfflineDetectionBatch(files.length);
 
   return {
     uploadId: "offline-demo",
@@ -280,12 +280,12 @@ function buildOfflineScanResponse(files: File[]): ScanSession {
     inventoryAdjustments: {},
     correctedInventory: {},
     selectedCategory: null,
-    recommendationResponse: null,
+    buildIdeaResponse: null,
   };
 }
 
 function buildOfflineScanResponseFromSampleIds(sampleIds: string[]): ScanSession {
-  const detectionBatch = buildOfflineMockDetectionBatch(sampleIds.length);
+  const detectionBatch = buildOfflineDetectionBatch(sampleIds.length);
 
   return {
     uploadId: "offline-demo",
@@ -303,7 +303,7 @@ function buildOfflineScanResponseFromSampleIds(sampleIds: string[]): ScanSession
     inventoryAdjustments: {},
     correctedInventory: {},
     selectedCategory: null,
-    recommendationResponse: null,
+    buildIdeaResponse: null,
   };
 }
 
@@ -477,12 +477,12 @@ export async function fetchBuildDetail(buildId: string): Promise<ApiResult<Build
   }
 }
 
-export async function fetchRecommendations(
+export async function fetchBuildIdeas(
   inventory: InventoryMap,
   category?: Category,
-): Promise<ApiResult<RecommendationResponse>> {
+): Promise<ApiResult<BuildIdeaResponse>> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/recommendations`, {
+    const response = await fetch(`${API_BASE_URL}/api/build-ideas`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -494,17 +494,17 @@ export async function fetchRecommendations(
     });
 
     if (!response.ok) {
-      throw new Error(`Recommendation request failed with ${response.status}`);
+      throw new Error(`Build idea request failed with ${response.status}`);
     }
 
-    const rawResponse = (await response.json()) as RawRecommendationResponse;
+    const rawResponse = (await response.json()) as RawBuildIdeaResponse;
     return {
-      data: mapRecommendationResponse(rawResponse),
+      data: mapBuildIdeaResponse(rawResponse),
       source: "api",
     };
   } catch {
     return {
-      data: buildOfflineRecommendationResponse(inventory, category),
+      data: buildOfflineBuildIdeaResponse(inventory, category),
       source: "offline",
     };
   }

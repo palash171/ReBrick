@@ -24,7 +24,7 @@ class DetectionProfile:
 
 
 @dataclass(frozen=True)
-class MockScanResult:
+class FallbackScanResult:
     detection_batch: DetectionBatch
     scan_overview: ScanOverview
 
@@ -185,7 +185,7 @@ def build_scan_overview(profile_name: str, detection_batch: DetectionBatch) -> S
     )
 
 
-def build_detection_batch_for_files(saved_files: List[UploadedScanFile]) -> MockScanResult:
+def build_detection_batch_for_files(saved_files: List[UploadedScanFile]) -> FallbackScanResult:
     signature = build_signature(saved_files)
     profile = select_detection_profile(saved_files, signature)
     image_count = max(len(saved_files), 1)
@@ -216,13 +216,13 @@ def build_detection_batch_for_files(saved_files: List[UploadedScanFile]) -> Mock
         )
 
     detection_batch = DetectionBatch(image_count=image_count, detections=detections)
-    return MockScanResult(
+    return FallbackScanResult(
         detection_batch=detection_batch,
         scan_overview=build_scan_overview(profile.name, detection_batch),
     )
 
 
-def build_default_detection_batch(image_count: int = 3) -> MockScanResult:
+def build_default_detection_batch(image_count: int = 3) -> FallbackScanResult:
     default_files = [
         UploadedScanFile(
             original_name=f"demo-{index + 1}.jpg",

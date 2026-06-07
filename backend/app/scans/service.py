@@ -3,12 +3,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from app.builds.matcher import recommend_builds
+from app.builds.matcher import find_build_ideas
 from app.schemas import (
-    BuildRecommendation,
+    BuildIdea,
     DetectionBatch,
     MissingRequirement,
-    RecommendationResponse,
+    BuildIdeaResponse,
     ScanOverview,
     ScanSessionListResponse,
     ScanSessionResponse,
@@ -33,16 +33,16 @@ def utc_now_iso() -> str:
     return datetime.now(UTC).replace(microsecond=0).isoformat()
 
 
-def build_recommendation_response(
+def create_build_idea_response(
     corrected_inventory: Dict[str, int],
     category: Optional[str],
-) -> RecommendationResponse:
-    recommendation_result = recommend_builds(corrected_inventory, category)
+) -> BuildIdeaResponse:
+    build_match_result = find_build_ideas(corrected_inventory, category)
 
-    return RecommendationResponse(
-        normalized_inventory=recommendation_result["normalized_inventory"],
-        recommendations=[
-            BuildRecommendation(
+    return BuildIdeaResponse(
+        normalized_inventory=build_match_result["normalized_inventory"],
+        build_ideas=[
+            BuildIdea(
                 build_id=item.build_id,
                 name=item.name,
                 category=item.category,
@@ -58,7 +58,7 @@ def build_recommendation_response(
                 ],
                 tags=item.tags,
             )
-            for item in recommendation_result["recommendations"]
+            for item in build_match_result["build_ideas"]
         ],
     )
 
@@ -126,7 +126,7 @@ def create_scan_session(
         inventory_adjustments={},
         corrected_inventory={},
         selected_category=None,
-        recommendation_response=None,
+        build_idea_response=None,
     )
 
     session_file_path(upload_id).write_text(
@@ -170,7 +170,7 @@ def apply_review_to_session(
     )
     corrected_inventory = apply_inventory_adjustments(base_inventory, inventory_adjustments)
 
-    recommendation_response = build_recommendation_response(
+    build_idea_response = create_build_idea_response(
         corrected_inventory,
         category,
     )
@@ -181,7 +181,7 @@ def apply_review_to_session(
             "inventory_adjustments": inventory_adjustments,
             "corrected_inventory": corrected_inventory,
             "selected_category": category,
-            "recommendation_response": recommendation_response,
+            "build_idea_response": build_idea_response,
         }
     )
     return save_scan_session(updated_session)
