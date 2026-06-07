@@ -2,15 +2,19 @@
 
 Reuse and rediscover your old LEGO collection.
 
-![ReBrick demo](assets/rebrick-demo.gif)
+<p align="center">
+  <video autoplay loop muted playsinline width="100%">
+    <source src="assets/rebrick-demo.mp4" type="video/mp4">
+  </video>
+</p>
 
 ## About
 
 I had this idea because a lot of people have buckets of random LEGO pieces and do not know what they can build with them.
 
-This app lets people upload photos of their pieces, fix anything the app got wrong, and get ideas for things they can build.
+ReBrick lets people upload photos of loose pieces, fix anything the app got wrong, and get ideas for things they can build.
 
-The goal was to make one simple project where I could work on frontend, backend, computer vision, and 3D visualisation in the same app.
+I built it as one project where I could work on frontend, backend, computer vision, and 3D visualisation in the same app.
 
 ## How it works
 
@@ -20,43 +24,59 @@ The goal was to make one simple project where I could work on frontend, backend,
 4. The app uses the final piece list to show build ideas.
 5. The user can open a 3D preview and an assembly page for each build.
 
-![ReBrick flow](assets/rebrick-flow.svg)
-
 ## Features
 
 1. Photo upload
-2. Piece review with quick matches, a dropdown, and skip
-3. Current cart with add and remove controls
-4. Build ideas by category
-5. 3D exploded view
-6. 3D assembled view
-7. Separate assembly page
+2. Quick test gallery
+3. Piece review with quick matches, a dropdown, and skip
+4. Current cart with add and remove controls
+5. Build ideas by category
+6. 3D exploded view
+7. 3D assembled view
+8. Separate assembly page
 
 ## Tech stack
 
-1. Frontend: React, TypeScript, TailwindCSS, Three.js, React Three Fiber
-2. Backend: Python, FastAPI, Pydantic
-3. Computer vision: OpenCV and image processing
-4. Testing: Python unit tests and frontend build checks
+1. React and TypeScript
+2. TailwindCSS
+3. Three.js and React Three Fiber
+4. Python, FastAPI, and Pydantic
+5. OpenCV and image processing
+6. Python unit tests and frontend build checks
 
 ## Getting started
 
-1. Start the backend.
+1. Set up the backend.
+
+```bash
+cd backend
+python3 -m venv .venv
+./.venv/bin/pip install -r requirements.txt
+```
+
+2. Start the backend.
 
 ```bash
 cd backend
 ./.venv/bin/python -m uvicorn app.main:app --reload
 ```
 
-2. Start the frontend.
+3. Set up the frontend.
+
+```bash
+cd frontend
+npm install
+```
+
+4. Start the frontend.
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-3. Open the local address shown by Vite in your browser.
-4. More notes are in `docs/backend-readme.md`, `docs/frontend-readme.md`, and `docs/roadmap.md`.
+5. Open the local address shown by Vite in your browser.
+6. More notes are in `docs/backend-readme.md`, `docs/frontend-readme.md`, and `docs/roadmap.md`.
 
 ## Roadmap
 
