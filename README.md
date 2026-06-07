@@ -2,9 +2,7 @@
 
 Reuse and rediscover your old LEGO collection.
 
-![ReBrick demo](assets/rebrick-demo.gif)
-
-Full video file: [rebrick-demo.mp4](assets/rebrick-demo.mp4)
+https://github.com/user-attachments/assets/c39c049e-b1b7-4df3-94af-300d3e8dc337
 
 ## About
 
